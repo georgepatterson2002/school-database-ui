@@ -29,7 +29,12 @@ CREATE TABLE Buildings (
 CREATE TABLE Departments (
     Department_ID INT AUTO_INCREMENT PRIMARY KEY,
     Department_Name VARCHAR(100),
-    Department_Head VARCHAR(100)
+    Department_Head_ID INT,  -- Renamed from Professor_ID to Department_Head_ID, allowing NULL values
+    Building_ID INT,
+    CONSTRAINT fk_department_head FOREIGN KEY (Department_Head_ID) REFERENCES Professors(Professor_ID)
+        ON DELETE SET NULL ON UPDATE CASCADE,
+    CONSTRAINT fk_department_building FOREIGN KEY (Building_ID) REFERENCES Buildings(Building_ID)
+        ON DELETE SET NULL ON UPDATE CASCADE
 );
 
 CREATE TABLE Professors (
@@ -102,5 +107,13 @@ VALUES
 ('Arts Center', 80),
 ('Library', 50),
 ('Computer Lab', 40);
+
+INSERT INTO Departments (Department_Name, Professor_ID, Building_ID)
+VALUES 
+('Computer Science', 1, 1), 
+('Business', 2, 2), 
+('Mathematics', 3, 3),
+('Physics', 4, 4), 
+('Biology', 5, 5); 
 
 
