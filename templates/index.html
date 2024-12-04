@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tables</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        ul li {
+            display: inline;
+            margin-right: 15px;
+        }
+        ul li a {
+            text-decoration: none;
+            color: #007BFF;
+            font-weight: bold;
+        }
+        ul li a:hover {
+            text-decoration: underline;
+        }
+        .dropdown {
+            margin-top: 20px;
+        }
+        .dropdown select {
+            padding: 5px;
+            font-size: 16px;
+        }
+        .dropdown button {
+            padding: 6px 10px;
+            font-size: 16px;
+            margin-left: 5px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        .dropdown button:hover {
+            background-color: #0056b3;
+        }
+        table {
+            margin-top: 20px;
+            border-collapse: collapse;
+            width: 100%;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <h1>Tables</h1>
+    <ul>
+        {% for table in tables %}
+            <li><a href="{{ url_for('show_table', table_name=table) }}">{{ table }}</a></li>
+        {% endfor %}
+    </ul>
+    
+    <div class="dropdown">
+        <form method="post" action="/execute_query">
+            <select name="query_select" onchange="this.form.query.value=this.options[this.selectedIndex].value;">
+
+                <option value="" disabled selected>Select query</option>
+                
+                <option value="SELECT 
+                c.Class_ID, 
+                c.Class_Name, 
+                c.Class_Code, 
+                c.Units, 
+                c.Time, 
+                c.Day, 
+                c.Semester, 
+                b.Building_Name, 
+                CONCAT(p.First_Name, ' ', p.Last_Name) AS Professor_Name,
+                b.Number_of_Rooms AS Building_Capacity
+            FROM Classes c
+            JOIN Buildings b ON c.Building_ID = b.Building_ID
+            JOIN Professors p ON c.Professor_ID = p.Professor_ID
+            WHERE b.Building_Name = 'Computer Lab'
+            ORDER BY c.Class_Name;">All Classes In Computer Lab with Professor and Building Info</option>
+    
+                <option value="SELECT c.Class_Name, c.Class_Code, c.Units, c.Time, c.Day, c.Semester
+                FROM Classes c
+                JOIN Professors p ON c.Professor_ID = p.Professor_ID
+                WHERE p.First_Name = 'Alan' AND p.Last_Name = 'Turing';">All Classes Professor Alan Turing Teaches</option>
+    
+                <option value="SELECT Building_Name, Number_of_Rooms
+                FROM Buildings
+                WHERE Number_of_Rooms < 100;">All Buildings with Under 100 Rooms</option>
+    
+                <option value="SELECT Student_ID, First_Name, Last_Name, GPA
+                FROM Students
+                WHERE GPA > 3.5;">All Students with GPA Above 3.5</option>
+    
+                <option value="SELECT Class_Name, Class_Code, Units, Time, Day, Semester
+                FROM Classes
+                WHERE Units = 3;">All Classes with 3 Units</option>
+            </select>
+            <input type="hidden" name="query">
+            <button type="submit">Execute</button>
+        </form>
+    </div>
+    
+    
+
+    {% if query_results %}
+        <h2>Query Results</h2>
+        <table>
+            <tr>
+                {% for col in query_results.columns %}
+                    <th>{{ col }}</th>
+                {% endfor %}
+            </tr>
+            {% for row in query_results.rows %}
+                <tr>
+                    {% for col in query_results.columns %}
+                        <td>{{ row[col] }}</td>
+                    {% endfor %}
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+</body>
+</html>

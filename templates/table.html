@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ table_name }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+
+        table th, table td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        table th {
+            background-color: #f4f4f4;
+        }
+
+        table tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+
+        form {
+            margin-top: 20px;
+        }
+
+        form input, form button {
+            padding: 10px;
+            margin: 5px;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .actions a {
+            color: #d9534f;
+            text-decoration: none;
+            padding: 5px 10px;
+        }
+
+        .actions a:hover {
+            text-decoration: underline;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            text-decoration: none;
+            color: #007bff;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+            text-align: center;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Table: {{ table_name }}</h1>
+    {% if rows %}
+        <table>
+            <thead>
+                <tr>
+                    {% for col in columns %}
+                        <th>{{ col }}</th>
+                    {% endfor %}
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in rows %}
+                    <tr>
+                        {% for col in columns %}
+                            <td>{{ row[col] }}</td>
+                        {% endfor %}
+                        <td class="actions">
+                            <a href="{{ url_for('delete_entry', table_name=table_name, id=row[columns[0]]) }}">Delete</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p class="center">No data available for this table.</p>
+    {% endif %}
+
+    <form action="{{ url_for('add_entry', table_name=table_name) }}" method="post">
+        <h3>Add New Entry</h3>
+        {% for col in columns %}
+            <input type="text" name="{{ col }}" placeholder="{{ col }}">
+        {% endfor %}
+        <button type="submit">Add</button>
+    </form>
+
+    <!-- Display the error message if available -->
+    {% if error_message %}
+        <p style="color: red; text-align: center;">Error: {{ error_message }}</p>
+    {% endif %}
+
+    <a href="/" class="back-link">Back to Tables</a>
+</body>
+
+
+</html>
