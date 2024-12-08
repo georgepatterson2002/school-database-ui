@@ -57,79 +57,118 @@
             padding: 10px;
             text-align: left;
         }
+        .queries {
+            margin-top: 40px;
+        }
+        .queries form {
+            margin: 10px 0;
+        }
+        .queries label {
+            font-weight: bold;
+        }
+        .queries input[type="text"],
+        .queries input[type="number"] {
+            padding: 5px;
+            font-size: 14px;
+            margin: 5px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            width: 200px;
+        }
+        .queries button {
+            padding: 6px 10px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            border-radius: 3px;
+        }
+        .queries button:hover {
+            background-color: #0056b3;
+        }
     </style>
 </head>
 <body>
-    <h1>Tables</h1>
+    <h1>School Database</h1>
     <ul>
         {% for table in tables %}
             <li><a href="{{ url_for('show_table', table_name=table) }}">{{ table }}</a></li>
         {% endfor %}
     </ul>
-    
-    <div class="dropdown">
-        <form method="post" action="/execute_query">
-            <select name="query_select" onchange="this.form.query.value=this.options[this.selectedIndex].value;">
 
-                <option value="" disabled selected>Select query</option>
-                
-                <option value="SELECT 
-                c.Class_ID, 
-                c.Class_Name, 
-                c.Class_Code, 
-                c.Units, 
-                c.Time, 
-                c.Day, 
-                c.Semester, 
-                b.Building_Name, 
-                CONCAT(p.First_Name, ' ', p.Last_Name) AS Professor_Name,
-                b.Number_of_Rooms AS Building_Capacity
-            FROM Classes c
-            JOIN Buildings b ON c.Building_ID = b.Building_ID
-            JOIN Professors p ON c.Professor_ID = p.Professor_ID
-            WHERE b.Building_Name = 'Computer Lab'
-            ORDER BY c.Class_Name;">All Classes In Computer Lab with Professor and Building Info</option>
+    <div class="queries">
+        <form method="get" action="/query">
+            <label>1. All classes in 
+                <select name="building_name">
+                    <option value="">Select Building</option>
+                    {% for building in building_names %}
+                        <option value="{{ building }}">{{ building }}</option>
+                    {% endfor %}
+                </select>
+            with Professor and Building Info</label>
+            <button type="submit">Search</button>
+        </form>
     
-                <option value="SELECT c.Class_Name, c.Class_Code, c.Units, c.Time, c.Day, c.Semester
-                FROM Classes c
-                JOIN Professors p ON c.Professor_ID = p.Professor_ID
-                WHERE p.First_Name = 'Alan' AND p.Last_Name = 'Turing';">All Classes Professor Alan Turing Teaches</option>
+        <form method="get" action="/query">
+            <label>2. All classes 
+                <select name="professor_name">
+                    <option value="">Select Professor</option>
+                    {% for professor in professor_names %}
+                        <option value="{{ professor }}">{{ professor }}</option>
+                    {% endfor %}
+                </select>
+            teaches</label>
+            <button type="submit">Search</button>
+        </form>
     
-                <option value="SELECT Building_Name, Number_of_Rooms
-                FROM Buildings
-                WHERE Number_of_Rooms < 100;">All Buildings with Under 100 Rooms</option>
+        <form method="get" action="/query">
+            <label>3. All buildings with under 
+                <input type="number" name="room_count" placeholder="Enter number of rooms">
+            rooms</label>
+            <button type="submit">Search</button>
+        </form>
     
-                <option value="SELECT Student_ID, First_Name, Last_Name, GPA
-                FROM Students
-                WHERE GPA > 3.5;">All Students with GPA Above 3.5</option>
+        <form method="get" action="/query">
+            <label>4. All students with GPA above 
+                <input type="number" step="0.1" name="gpa_threshold" placeholder="Enter GPA (e.g., 3.5)">
+            </label>
+            <button type="submit">Search</button>
+        </form>
     
-                <option value="SELECT Class_Name, Class_Code, Units, Time, Day, Semester
-                FROM Classes
-                WHERE Units = 3;">All Classes with 3 Units</option>
-            </select>
-            <input type="hidden" name="query">
-            <button type="submit">Execute</button>
+        <form method="get" action="/query">
+            <label>5. All classes with 
+                <input type="number" name="unit_count" placeholder="Enter number of units">
+            Units</label>
+            <button type="submit">Search</button>
         </form>
     </div>
     
-    
-
-    {% if query_results %}
-        <h2>Query Results</h2>
+    {% if query_results is not none %}
+    {% if query_results|length == 0 %}
+        <p>No results found or invalid search. Try again!</p>
+    {% else %}
+        <!-- Display the query results -->
         <table>
-            <tr>
-                {% for col in query_results.columns %}
-                    <th>{{ col }}</th>
-                {% endfor %}
-            </tr>
-            {% for row in query_results.rows %}
+            <thead>
                 <tr>
-                    {% for col in query_results.columns %}
-                        <td>{{ row[col] }}</td>
+                    {% for col in query_results[0].keys() %}
+                        <th>{{ col }}</th>
                     {% endfor %}
                 </tr>
-            {% endfor %}
+            </thead>
+            <tbody>
+                {% for row in query_results %}
+                    <tr>
+                        {% for val in row.values() %}
+                            <td>{{ val }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
         </table>
     {% endif %}
+{% endif %}
+
 </body>
 </html>
