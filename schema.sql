@@ -29,7 +29,7 @@ CREATE TABLE Buildings (
 CREATE TABLE Departments (
     Department_ID INT AUTO_INCREMENT PRIMARY KEY,
     Department_Name VARCHAR(100),
-    Department_Head_ID INT,  -- Renamed from Professor_ID to Department_Head_ID, allowing NULL values
+    Department_Head_ID INT, 
     Building_ID INT,
     CONSTRAINT fk_department_head FOREIGN KEY (Department_Head_ID) REFERENCES Professors(Professor_ID)
         ON DELETE SET NULL ON UPDATE CASCADE,
