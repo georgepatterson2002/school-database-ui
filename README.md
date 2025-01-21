@@ -1,6 +1,6 @@
 # school-database-ui
 
-This repository contains the SQL schema and associated scripts for the `SchoolDB` database. The schema is designed to manage information for a school database, including students, professors, classes, departments, and buildings. It also includes triggers to enforce data integrity and constraints.
+This repository contains the SQL schema and associated scripts for the `SchoolDB` database which can be used to inspect tables and run custom queries. The schema is designed to manage information for a school database, including students, professors, classes, departments, and buildings. It also includes triggers to enforce data integrity and constraints.
 
 ## Features
 
